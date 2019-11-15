@@ -4,9 +4,6 @@ compiler:
   - gcc
   - clang
 
-install:
-brew install open-mpi libomp tbb; fi
-install mpich libmpich-dev; fi
 
 before_script:
   - mkdir build
