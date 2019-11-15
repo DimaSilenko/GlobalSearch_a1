@@ -6,7 +6,6 @@ before_script:
   - mkdir build
   - cd build
 script:
-- git submodule update --init --recursive
   - cmake ..
   - cmake --build . --config -j4
   - cd ..
