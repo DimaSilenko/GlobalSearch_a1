@@ -6,7 +6,6 @@ before_script:
   - mkdir build
   - cd build
 script:
-  - cmake ../
-  - make -j
+  - cmake ..
 notifications:
   email: false
