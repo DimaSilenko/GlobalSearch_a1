@@ -1,5 +1,9 @@
 language: cpp
 
+compiler:
+  - gcc
+  - clang
+
 install:
 brew install open-mpi libomp tbb; fi
 install mpich libmpich-dev; fi
