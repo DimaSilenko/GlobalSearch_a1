@@ -1,8 +1,42 @@
 language: cpp
 
-compiler:
-  - gcc
-  - clang
+
+matrix:
+  include:
+    - os: linux
+      dist: xenial
+      addons:
+        apt:
+          sources: ubuntu-toolchain-r-test
+          packages: g++-5
+      env: MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+
+    - os: linux
+      dist: bionic
+      addons:
+        apt:
+          sources: ubuntu-toolchain-r-test
+          packages: g++-8
+      env: MATRIX_EVAL="CC=gcc-8 && CXX=g++-8
+
+    - os: linux
+      dist: xenial
+      compiler: clang
+      addons:
+        apt:
+          packages: clang-5.0
+      env: MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
+
+    - os: linux
+      dist: xenial
+      compiler: clang
+
+before_install:
+- eval "${MATRIX_EVAL}"
+
+install:
+- if [[ $TRAVIS_OS_NAME == 'linux' ]]; then sudo apt-get install mpich libmpich-dev; fi
+- if [[ $TRAVIS_OS_NAME == 'linux' ]]; then sudo apt-get install libomp-dev libtbb-dev; fi
 
 
 before_script:
