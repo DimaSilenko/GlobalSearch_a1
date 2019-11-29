@@ -30,22 +30,26 @@ if (OPENMP_FOUND)
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
 
-#if( USE_MPI )
-message("Hi")
+
+
+add_executable(${GlobalSearch} ${srcs} ${hdrs})
+
+if( ${USE_MPI} )
+	message("Set MPI START")
     if( MPI_COMPILE_FLAGS )
-        set_target_properties( ${ProjectId} PROPERTIES COMPILE_FLAGS "${MPI_COMPILE_FLAGS}" )
+        set_target_properties( ${GlobalSearch} PROPERTIES COMPILE_FLAGS "${MPI_COMPILE_FLAGS}" )
     endif( MPI_COMPILE_FLAGS )
 
     if( MPI_LINK_FLAGS )
-        set_target_properties( ${ProjectId} PROPERTIES LINK_FLAGS "${MPI_LINK_FLAGS}" )
+        set_target_properties( ${GlobalSearch} PROPERTIES LINK_FLAGS "${MPI_LINK_FLAGS}" )
     endif( MPI_LINK_FLAGS )
-    target_link_libraries( ${ProjectId} ${MPI_LIBRARIES} )
 	
-#else( USE_MPI )
-    #message( STATUS "-- ${ProjectId} - NOT BUILD!"  )
-#endif( USE_MPI )
+    target_link_libraries( ${GlobalSearch} ${MPI_LIBRARIES} )
+	message("Set MPI FINISH")
+else( ${USE_MPI} )
+    message( STATUS "-- ${GlobalSearch} - NOT BUILD!"  )
+endif( USE_MPI )
 
-add_executable(${GlobalSearch} ${srcs} ${hdrs})
 target_link_libraries(${GlobalSearch} ${pugixml} ${EXAMIN_MPFR_LIB} ${EXAMIN_MPIR_LIB} ${DISLIN_LIB})
 
 
