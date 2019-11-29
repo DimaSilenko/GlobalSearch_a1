@@ -1,6 +1,7 @@
-cmake_minimum_required(VERSION 2.8) #Проверка версии CMake.
+cmake_minimum_required(VERSION 3.1) #Проверка версии CMake.
 
 set(PROJECT_NAME 000_Lebedev_AllLab) #Создаем обычную локальную переменную с именем проекта
+set(CMAKE_CXX_STANDARD 11)
 project(${PROJECT_NAME}) # Название проекта
 
 set(PROBLEM_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/_bin CACHE STRING "Output directory")
@@ -16,6 +17,7 @@ if(NOT CMAKE_BUILD_TYPE) # проверка имеющихся у компилятора вариантов сборки
 endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/pugixml)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/)
 
 if(WIN32)
     option(gtest_force_shared_crt "" TRUE)
@@ -26,11 +28,11 @@ endif(WIN32)
 ############################### GTest ###############################
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/gtest")
 include_directories("${CMAKE_SOURCE_DIR}/3rdparty/gtest/googletest/include")
-if( WIN32 )
+#if( WIN32 )
     include_directories("${CMAKE_SOURCE_DIR}/3rdparty/gtest-mpi/win")
-else( WIN32 )
-    include_directories("${CMAKE_SOURCE_DIR}/3rdparty/gtest-mpi/linux")
-endif( WIN32 )
+#else( WIN32 )
+    #include_directories("${CMAKE_SOURCE_DIR}/3rdparty/gtest-mpi/linux")
+#endif( WIN32 )
 
 ################################ MPI ################################
 option(USE_MPI ON)
@@ -52,6 +54,21 @@ add_subdirectory(Rastrigin2)
 add_subdirectory(GKLS)
 add_subdirectory(Grishagin)
 add_subdirectory(StronginC3)
+
+file(GLOB SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/sample_src/*.cpp
+                    ${CMAKE_CURRENT_SOURCE_DIR}/sample_src/*.h
+                    ${CMAKE_CURRENT_SOURCE_DIR}/sample_src/*.hpp
+                    ${CMAKE_CURRENT_SOURCE_DIR}/sample_src/GKLS/*.hpp
+                    ${CMAKE_CURRENT_SOURCE_DIR}/sample_src/GKLS/*.cpp
+                    ${CMAKE_CURRENT_SOURCE_DIR}/sample_src/Grishagin/*.hpp
+                    ${CMAKE_CURRENT_SOURCE_DIR}/sample_src/Grishagin/*.cpp
+                    ${CMAKE_CURRENT_SOURCE_DIR}/sample_src/Hill/*.cpp
+                    ${CMAKE_CURRENT_SOURCE_DIR}/sample_src/Shekel/*.cpp
+                    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
+                    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h
+                    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp)
+
+add_executable(${PROJECT_NAME_STR} ${SRC_FILES})
 
 #file(GLOB hdrs "*.h*") #Добавляем в переменную hdrs все файлы с расширением .h
 #file(GLOB srcs "*.cpp") #Добавляем в переменную srcs все файлы с расширением .cpp
