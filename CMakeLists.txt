@@ -10,6 +10,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${PROBLEM_OUTPUT_DIRECTORY})
 
 set(GlobalSearch GlobalSearch) #Переменная с именем библиотеки
 set(pugixml pugixml) #Переменная с именем библиотеки
+option(USE_MPI "Set OFF to disable MPI" ON)
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Configs" FORCE) #Создается переменная CMAKE_CONFIGURATION_TYPES со значением "Debug;Release" и меткой/разделом Configs, переменная сохраниется в специальном файле доступном из всех файлов,
 if(NOT CMAKE_BUILD_TYPE) # проверка имеющихся у компилятора вариантов сборки
@@ -35,17 +36,18 @@ include_directories("${CMAKE_SOURCE_DIR}/3rdparty/gtest/googletest/include")
 #endif( WIN32 )
 
 ################################ MPI ################################
-option(USE_MPI ON)
-#if( USE_MPI )
+
+if( ${USE_MPI} )
+
     find_package( MPI )
     if( MPI_FOUND )
-	message ("NHI")
+	message ("MPI FOUND!!!")
         include_directories( ${MPI_INCLUDE_PATH} )
     else( MPI_FOUND )
-		message ("Not Found")
+		message ("MPI Not Found")
         set( USE_MPI OFF )
     endif( MPI_FOUND )
-#endif( USE_MPI )
+endif( USE_MPI )
 
 add_subdirectory(pugixml)
 add_subdirectory(GlobalSearch)

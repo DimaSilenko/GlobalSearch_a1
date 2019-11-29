@@ -47,9 +47,14 @@ int  main(int argc, char* argv[])
 
   //Инициализация тестов и mpi
   //::testing::InitGoogleTest(&argc, argv);
-  //MPI_Init(&argc, &argv);
-  //int rankM;
-  //MPI_Comm_rank(MPI_COMM_WORLD, &rankM);
+  MPI_Init(&argc, &argv);
+  int rankM;
+  int sizeM;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rankM);
+  MPI_Comm_size(MPI_COMM_WORLD, &sizeM);
+
+  printf(" MPI_Comm_rank = %d\n MPI_Comm_size = %d\n", rankM, sizeM);
+
   //::testing::AddGlobalTestEnvironment(new GTestMPIListener::MPIEnvironment);
   //::testing::TestEventListeners& listeners =
     //::testing::UnitTest::GetInstance()->listeners();
@@ -268,20 +273,20 @@ int  main(int argc, char* argv[])
   }
   
   printf("\n");
-  /*MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Barrier(MPI_COMM_WORLD);
 
-  unsigned int start_time = clock();
-  double per = Perebor(1000, dimension, problem);
-  unsigned int end_time = clock();
+  //unsigned int start_time = clock();
+  //double per = Perebor(1000, dimension, problem);
+  //unsigned int end_time = clock();
 
-  if (rankM == 0) 
-  {
-  double seconds = (double)(end_time - start_time) / CLOCKS_PER_SEC;
-  printf("Runtime = %lf\n", seconds);
+  //if (rankM == 0) 
+  //{
+  //double seconds = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+  //printf("Runtime = %lf\n", seconds);
 
-  printf("Try to do perebor = %lf\n", per);
-  }
-  MPI_Finalize();*/
+  //printf("Try to do perebor = %lf\n", per);
+  //}
+  MPI_Finalize();
 
   double start =  clock();
   double agp = AGP(10000, 0.000001, dimension, problem);
