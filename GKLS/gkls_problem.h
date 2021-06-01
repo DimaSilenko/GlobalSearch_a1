@@ -4,7 +4,7 @@
 #include "../GlobalSearch/problem_interface.h"
 #include "gkls_function.h"
 
-class TGKLSProblem : public IProblem
+class TGKLSProblem2 : public IProblem
 {
 protected:
 
@@ -16,7 +16,7 @@ protected:
 
 public:
 
-  TGKLSProblem();
+  TGKLSProblem2();
 
   virtual int SetConfigPath(const std::string& configPath);
   virtual int SetDimension(int dimension);
@@ -33,7 +33,7 @@ public:
 
   virtual double CalculateFunctionals(const double* x, int fNumber);
 
-  ~TGKLSProblem();
+  ~TGKLSProblem2();
 };
 
 extern "C" LIB_EXPORT_API IProblem* create();

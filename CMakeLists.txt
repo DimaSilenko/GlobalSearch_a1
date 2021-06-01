@@ -10,6 +10,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${PROBLEM_OUTPUT_DIRECTORY})
 
 set(GlobalSearch GlobalSearch) #Переменная с именем библиотеки
 set(pugixml pugixml) #Переменная с именем библиотеки
+set(src src)
+set(Drawing Drawing)
 option(USE_MPI "Set OFF to disable MPI" ON)
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Configs" FORCE) #Создается переменная CMAKE_CONFIGURATION_TYPES со значением "Debug;Release" и меткой/разделом Configs, переменная сохраниется в специальном файле доступном из всех файлов,
@@ -18,7 +20,8 @@ if(NOT CMAKE_BUILD_TYPE) # проверка имеющихся у компилятора вариантов сборки
 endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/pugixml)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Drawing)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/SRC/)
 
 if(WIN32)
     option(gtest_force_shared_crt "" TRUE)
@@ -50,6 +53,8 @@ if( ${USE_MPI} )
 endif( USE_MPI )
 
 add_subdirectory(pugixml)
+add_subdirectory(Drawing)
+add_subdirectory(src)
 add_subdirectory(GlobalSearch)
 add_subdirectory(MyFunction)
 add_subdirectory(Rastrigin2)
@@ -57,21 +62,11 @@ add_subdirectory(GKLS)
 add_subdirectory(Grishagin)
 add_subdirectory(StronginC3)
 
-file(GLOB SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/sample_src/*.cpp
-                    ${CMAKE_CURRENT_SOURCE_DIR}/sample_src/*.h
-                    ${CMAKE_CURRENT_SOURCE_DIR}/sample_src/*.hpp
-                    ${CMAKE_CURRENT_SOURCE_DIR}/sample_src/GKLS/*.hpp
-                    ${CMAKE_CURRENT_SOURCE_DIR}/sample_src/GKLS/*.cpp
-                    ${CMAKE_CURRENT_SOURCE_DIR}/sample_src/Grishagin/*.hpp
-                    ${CMAKE_CURRENT_SOURCE_DIR}/sample_src/Grishagin/*.cpp
-                    ${CMAKE_CURRENT_SOURCE_DIR}/sample_src/Hill/*.cpp
-                    ${CMAKE_CURRENT_SOURCE_DIR}/sample_src/Shekel/*.cpp
-                    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
-                    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h
-                    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp)
 
-add_executable(${PROJECT_NAME_STR} ${SRC_FILES})
+#target_link_libraries(src ${EXAMIN_MPFR_LIB} ${EXAMIN_MPIR_LIB} ${DISLIN_LIB})
 
+
+#-----------------------------------------------------------------------------------
 #file(GLOB hdrs "*.h*") #Добавляем в переменную hdrs все файлы с расширением .h
 #file(GLOB srcs "*.cpp") #Добавляем в переменную srcs все файлы с расширением .cpp
 

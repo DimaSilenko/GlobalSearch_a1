@@ -1,34 +1,26 @@
 //#define OMPI_IMPORTS
+//#pragma comment(lib, "D:\\GlobalSearch\\Test\\GlobalSearch_a1\\Drawing\\dislin\\lib\\win\\x86\\discpp.lib")
+
 #include "evolvent.h"
 #include "problem_manager.h"
 #include "extended.h"
 #include "mpi.h"
+#include "pugixml.hpp"
+#include "isolinesPlotter.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <ctime>
 #include <stdio.h>
 #include <omp.h>
-//#include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include "functions.h"
-
-//TEST(AGP, test_AGP_ra) {
-//  double ra = 0;
-//
-//  TProblemManager manager;
-//  std::string problemName = "ra";
-//  manager.LoadProblemLibrary(problemName);
-//  IProblem* problem = manager.GetProblem();
-//  int dimension = problem->GetDimension();
-//  double res = AGP(1000, 0.00001, dimension, problem);
-//
-//  EXPECT_EQ(ra, res);
-//}
 
 
 int  main(int argc, char* argv[])
 {
+  double eps = 0;
+  double r = 0;
   /// мэнаджер подключения задач
   TProblemManager manager;
   /// Число проведенных испытаний
@@ -45,24 +37,13 @@ int  main(int argc, char* argv[])
   int dimension = 0;
   IProblem* problem;
 
-  //Инициализация тестов и mpi
-  //::testing::InitGoogleTest(&argc, argv);
+  //Инициализация mpi
   MPI_Init(&argc, &argv);
   int rankM;
-  int sizeM;
   MPI_Comm_rank(MPI_COMM_WORLD, &rankM);
-  MPI_Comm_size(MPI_COMM_WORLD, &sizeM);
 
-  printf(" MPI_Comm_rank = %d\n MPI_Comm_size = %d\n", rankM, sizeM);
-
-  //::testing::AddGlobalTestEnvironment(new GTestMPIListener::MPIEnvironment);
-  //::testing::TestEventListeners& listeners =
-    //::testing::UnitTest::GetInstance()->listeners();
-
-  //listeners.Release(listeners.default_result_printer());
-  //listeners.Release(listeners.default_xml_generator());
-
-  //listeners.Append(new GTestMPIListener::MPIMinimalistPrinter);
+  /// Известная точка глобального минимума
+  double* BestTrialy;
 
   if (argc > 1)
   {
@@ -82,7 +63,7 @@ int  main(int argc, char* argv[])
     /// Получаем задачу
     problem = manager.GetProblem();
     /// Устанавливаем размерность
-    err = problem->SetDimension(1);
+    err = problem->SetDimension(2);
     if (err != TProblemManager::OK_)
     {
       printf("Error SetDimension!\n");
@@ -104,12 +85,33 @@ int  main(int argc, char* argv[])
     }
     /// Получаем размерность из задачи
     dimension = problem->GetDimension();
+    printf("Dimension = %d\n", dimension);
+
+    pugi::xml_document doc;
+    pugi::xml_parse_result result = doc.load_file(problepConf.c_str());
+    pugi::xml_node config = doc.child("config");
+    
+    eps = std::stod(config.child("epsilon").child_value());
+    printf("Epsilon = %lf\n", eps);
+    r = std::stod(config.child("r").child_value());
+    //Выцепляем номер задачи
+    int funcNumber = std::stoi(config.child("function_number").child_value());
+    printf("Function_number = %d\n", problem->GetNumberOfFunctions());
+    //Для GKLS-----------------------------------------------------------------------------------------------
+    double global_dist = std::stod(config.child("global_dist").child_value());
+    double global_radius = std::stod(config.child("global_radius").child_value());
+    int numMinuma = std::stoi(config.child("num_minima").child_value());
+
+
+    printf("Task_number = %d\n", funcNumber);
+    printf("global_dist = %lf\n", global_dist);
+    printf("global_radius = %lf\n", global_radius);
+    printf("numMinuma = %d\n\n", numMinuma);
     /// Граници области поиска
     double* lower_bounds = new double[dimension];
     double* upper_bounds = new double[dimension];
     /// Получаем Граници области
     problem->GetBounds(lower_bounds, upper_bounds);
-
     /// Координаты найденного  минимума
     double* minx = new double[dimension];
     /// Значение минимума
@@ -120,7 +122,7 @@ int  main(int argc, char* argv[])
       points = new double*[maxTrial * 2];
     }
 
-    if (/*rankM == 0*/1)
+    if (rankM == 0)
     {
 
       //if (Extended::GetPrecision() == 0.01)
@@ -205,13 +207,15 @@ int  main(int argc, char* argv[])
       ///
       ///////////////////
 
-      for (int i = 0; i < dimension; i++)
+      //-----------------------------------------------------------------------------------------------------------------
+      /*for (int i = 0; i < dimension; i++)
         printf("x[%d] = %lf\n", i, minx[i]);
       printf("min = %lf\n", minf);
-      printf("Point count = %d\n\n", trialCount);
+      printf("Point count = %d\n\n", trialCount);*/
+      //-----------------------------------------------------------------------------------------------------------------
 
-      /// Известная точка глобального минимума
-      double* BestTrialy = new double[dimension];
+      BestTrialy = new double[dimension];
+
       if (problem->GetOptimumPoint(BestTrialy) == TProblemManager::OK_)
       {
         for (int j = 0; j < dimension; j++)
@@ -271,30 +275,64 @@ int  main(int argc, char* argv[])
       }
     }
   }
-  
-  printf("\n");
+ 
   MPI_Barrier(MPI_COMM_WORLD);
+  int iter = 1000000;
 
-  //unsigned int start_time = clock();
-  //double per = Perebor(1000, dimension, problem);
-  //unsigned int end_time = clock();
+  double* bestX = new double[dimension];
+  double start_time = MPI_Wtime();
+  double per = 0;// Perebor(iter, dimension, problem, &bestX);
+  double end_time = MPI_Wtime();
 
-  //if (rankM == 0) 
-  //{
-  //double seconds = (double)(end_time - start_time) / CLOCKS_PER_SEC;
-  //printf("Runtime = %lf\n", seconds);
+  double By = problem->CalculateFunctionals(BestTrialy, 0);
+  printf("min = %lf\n", By);
 
-  //printf("Try to do perebor = %lf\n", per);
-  //}
+  if (rankM == 0) 
+  {
+    //Перебор нам пока не нужен больше
+    /*printf("\nPerebor:\n");
+
+    double seconds = end_time - start_time;
+    printf("Iteration Perebor = %d\n", iter);
+    printf("Solve time Perebor = %lf\n", seconds);
+    printf("Try to do perebor: Function = %lf X = (%lf, %lf)\n", per, bestX[0], bestX[1]);
+    printf("Accuracy Function Perebor = %lf, Accuracy X Perebor = (%lf, %lf)\n", (abs(per - By)),
+      (abs(bestX[0] - BestTrialy[0])), (abs(bestX[1] - BestTrialy[1])));
+
+    bool answer = ((abs(bestX[0] - BestTrialy[0]) < eps) && (abs(bestX[1] - BestTrialy[1]) < eps));
+    if (answer)
+      printf("Perebor found Global optimum!\n");
+    else
+      printf("Something went wrong with Perebor!!\n");*/
+
+    int iteration = 0;
+    printf("\n\nAGP:\n");
+    printf("r = %lf\n", r);
+    int numThr = 2;
+    int flag = 1;
+    clock_t start = clock();
+    double agp = AGP_Space(iter, eps, dimension, problem, &bestX, &iteration, r, BestTrialy, numThr, flag, argv);
+    clock_t end = clock();
+    
+    double seconds = (double)(end - start) / CLOCKS_PER_SEC;
+    printf("Iteration AGP = %d\n", iteration);
+    printf("Solve time AGP = %lf\n", seconds);
+    printf("Try to do AGP: Function = %lf X = (%lf, %lf)\n", agp, bestX[0], bestX[1]);
+
+    printf("Accuracy Function AGP = %lf, Accuracy X AGP = (%lf, %lf)\n", (abs(agp - By)),
+      (abs(bestX[0] - BestTrialy[0])), (abs(bestX[1] - BestTrialy[1])));
+
+    bool answer = ((abs(bestX[0] - BestTrialy[0]) < eps) && (abs(bestX[1] - BestTrialy[1]) < eps));
+    if (answer)
+      printf("AGP found Global optimum!\n");
+    else
+      printf("Something went wrong with AGP!!\n");
+
+    //Визуализация всего, что наделал АГП, чтобы понять что не так
+    /*plot2dProblemIsolines(problem, "D:\\GlobalSearch\\Test\\GlobalSearch_a1\\points.png",
+      "D:\\GlobalSearch\\Test\\GlobalSearch_a1\\points.txt", false, 0);*/
+  }
   MPI_Finalize();
 
-  double start =  clock();
-  double agp = AGP(10000, 0.000001, dimension, problem);
-  double end = clock();
-  double seconds = (end - start) / CLOCKS_PER_SEC;
-  printf("Runtime AGP = %lf\n", seconds);
-  printf("Try to do AGP = %lf\n", agp);
-
-  //return RUN_ALL_TESTS();
   return 0;
 }

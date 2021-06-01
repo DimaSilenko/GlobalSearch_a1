@@ -1,0 +1,24 @@
+Dimension = 2
+Epsilon = 0.001000
+Function_number = 1
+Task_number = 64
+
+Optimal x[0] = 0.169351 
+Optimal x[1] = 0.015656 
+min = -8.455088
+
+Perebor:
+Iteration Perebor = 5000
+Solve time Perebor = 12.380076
+Try to do perebor: Function = -8.455090 X = (0.169366, 0.015597)
+Accuracy Function Perebor = 0.000003, Accuracy X Perebor = (0.000015, 0.000059)
+Perebor found Global optimum!
+
+
+AGP:
+r = 3.600000
+Iteration AGP = 2354
+Solve time AGP = 11.524000
+Try to do AGP: Function = -8.454188 X = (0.168457, 0.016113)
+Accuracy Function AGP = 0.000900, Accuracy X AGP = (0.000894, 0.000457)
+AGP found Global optimum!

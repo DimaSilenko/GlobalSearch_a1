@@ -18,6 +18,7 @@ include_directories(
   ${EXAMIN_MPFR_INCLUDES}
   ${EXAMIN_MPREAL_INCLUDES}
 )
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/SRC)
 
 link_directories(
   ${EXAMIN_MPIR_LIB_DIR}
@@ -50,9 +51,7 @@ else( ${USE_MPI} )
     message( STATUS "-- ${GlobalSearch} - NOT BUILD!"  )
 endif( USE_MPI )
 
-target_link_libraries(${GlobalSearch} ${pugixml} ${EXAMIN_MPFR_LIB} ${EXAMIN_MPIR_LIB} ${DISLIN_LIB})
+target_link_libraries(${GlobalSearch} ${pugixml} ${EXAMIN_MPFR_LIB} ${EXAMIN_MPIR_LIB} ${DISLIN_LIB} ${Drawing})
 
 
 #add_library(${MyLib1} STATIC ${srcs} ${hdrs}) #—оздаем статическую библиотеку с именем из переменной ${MyLib1}, объ€вленной в родительском CMake файле (локальные переменные перенос€тс€ в наследников), в неЄ добавл€ютс€ файлы из переменных ${srcs} и ${hdrs}
-
-

@@ -5,7 +5,7 @@
 #include <string>
 
 // ------------------------------------------------------------------------------------------------
-TGKLSProblem::TGKLSProblem()
+TGKLSProblem2::TGKLSProblem2()
 {
   mIsInitialized = false;
   mDimension = 0;
@@ -13,14 +13,14 @@ TGKLSProblem::TGKLSProblem()
 }
 
 // ------------------------------------------------------------------------------------------------
-int TGKLSProblem::SetConfigPath(const std::string& configPath)
+int TGKLSProblem2::SetConfigPath(const std::string& configPath)
 {
   mConfigPath = std::string(configPath);
   return IProblem::OK;
 }
 
 // ------------------------------------------------------------------------------------------------
-int TGKLSProblem::SetDimension(int dimension)
+int TGKLSProblem2::SetDimension(int dimension)
 {
   if(dimension > 1 && dimension <= mMaxDimension)
   {
@@ -32,13 +32,13 @@ int TGKLSProblem::SetDimension(int dimension)
 }
 
 // ------------------------------------------------------------------------------------------------
-int TGKLSProblem::GetDimension() const
+int TGKLSProblem2::GetDimension() const
 {
   return mDimension;
 }
 
 // ------------------------------------------------------------------------------------------------
-int TGKLSProblem::Initialize()
+int TGKLSProblem2::Initialize()
 {
   if (!mIsInitialized)
   {
@@ -92,7 +92,7 @@ int TGKLSProblem::Initialize()
 }
 
 // ------------------------------------------------------------------------------------------------
-void TGKLSProblem::GetBounds(double* lower, double *upper)
+void TGKLSProblem2::GetBounds(double* lower, double *upper)
 {
   if (mIsInitialized)
   {
@@ -105,7 +105,7 @@ void TGKLSProblem::GetBounds(double* lower, double *upper)
 }
 
 // ------------------------------------------------------------------------------------------------
-int TGKLSProblem::GetOptimumValue(double& value) const
+int TGKLSProblem2::GetOptimumValue(double& value) const
 {
   if (!mIsInitialized)
     return IProblem::UNDEFINED;
@@ -116,7 +116,7 @@ int TGKLSProblem::GetOptimumValue(double& value) const
 }
 
 // ------------------------------------------------------------------------------------------------
-int TGKLSProblem::GetOptimumPoint(double* point) const
+int TGKLSProblem2::GetOptimumPoint(double* point) const
 {
   if (!mIsInitialized)
     return IProblem::UNDEFINED;
@@ -127,31 +127,31 @@ int TGKLSProblem::GetOptimumPoint(double* point) const
 }
 
 // ------------------------------------------------------------------------------------------------
-int TGKLSProblem::GetNumberOfFunctions() const
+int TGKLSProblem2::GetNumberOfFunctions() const
 {
   return 1;
 }
 
 // ------------------------------------------------------------------------------------------------
-int TGKLSProblem::GetNumberOfConstraints() const
+int TGKLSProblem2::GetNumberOfConstraints() const
 {
   return 0;
 }
 
 // ------------------------------------------------------------------------------------------------
-int TGKLSProblem::GetNumberOfCriterions() const
+int TGKLSProblem2::GetNumberOfCriterions() const
 {
   return 1;
 }
 
 // ------------------------------------------------------------------------------------------------
-double TGKLSProblem::CalculateFunctionals(const double* y, int fNumber)
+double TGKLSProblem2::CalculateFunctionals(const double* y, int fNumber)
 {
   return mPFunction->EvaluateDFunction(y);
 }
 
 // ------------------------------------------------------------------------------------------------
-TGKLSProblem::~TGKLSProblem()
+TGKLSProblem2::~TGKLSProblem2()
 {
   if (mIsInitialized)
     delete mPFunction;
@@ -160,7 +160,7 @@ TGKLSProblem::~TGKLSProblem()
 // ------------------------------------------------------------------------------------------------
 LIB_EXPORT_API IProblem* create()
 {
-  return new TGKLSProblem();
+  return new TGKLSProblem2();
 }
 
 // ------------------------------------------------------------------------------------------------
